@@ -1,0 +1,17 @@
+github:
+  bucket:
+    # 配置仓库所属的用户名（如果是自己创建的，就是自己的用户名）
+    user: "Marthew01"
+    # 配置仓库名称
+    repository: "twitter-bucket"
+    # 配置自己的acccessToken
+    access-token: "5dbd3e82d2c9387e394e90c31562b294934a7226"
+    url: "https://cdn.jsdelivr.net/gh/${github.bucket.user}/${github.bucket.repository}/"
+    api: "https://api.github.com/repos/${github.bucket.user}/${github.bucket.repository}/contents/"
+
+server:
+  port: 9090
+
+#服务器上备份的路径
+sqlbackup:
+  path: D:/backupDB/
