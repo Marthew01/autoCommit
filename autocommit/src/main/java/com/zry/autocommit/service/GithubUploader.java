@@ -18,7 +18,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -32,16 +31,14 @@ import java.util.*;
 public class GithubUploader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GithubUploader.class);
-
-    public static final String URI_SEPARATOR = "/";
-
-    public static final Set<String> ALLOW_FILE_SUFFIX = new HashSet<>(Arrays.asList("txt", "sql", "dat"));
+    private static final String URI_SEPARATOR = "/";
+    private static final Set<String> ALLOW_FILE_SUFFIX = new HashSet<>(Arrays.asList("txt", "sql", "dat"));
 
     @Value("${github.bucket.url}")
     private String url;
 
     @Value("${sqlbackup.path}")
-    public String sql_backup_path;
+    private String sqlBackupPath;
 
     @Value("${github.bucket.api}")
     private String api;
@@ -52,48 +49,6 @@ public class GithubUploader {
     @Autowired
     RestTemplate restTemplate;
 
-    /**
-     * 上传文件到Github
-     *
-     * @param multipartFile
-     * @return 文件的访问地址
-     * @throws IOException
-     */
-    public String upload(MultipartFile multipartFile) throws IOException {
-
-        String suffix = this.getSuffix(multipartFile.getOriginalFilename()).toLowerCase();
-        if (!ALLOW_FILE_SUFFIX.contains(suffix)) {
-            throw new IllegalArgumentException("不支持的文件后缀：" + suffix);
-        }
-        // 重命名文件
-        String fileName = UUID.randomUUID().toString().replace("-", "") + "." + suffix;
-        // 目录按照日期打散
-        String[] folders = this.getDateFolder();
-        // 最终的文件路径
-        String filePath = new StringBuilder(
-                String.join(URI_SEPARATOR, folders))
-                .append(URI_SEPARATOR)
-                .append(fileName).toString();
-        LOGGER.info("上传文件到Github：{}", filePath);
-        JsonObject payload = new JsonObject();
-        payload.add("message", new JsonPrimitive("file upload"));
-        payload.add("content", new JsonPrimitive(Base64.getEncoder().encodeToString(multipartFile.getBytes())));
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        httpHeaders.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-        httpHeaders.set(HttpHeaders.AUTHORIZATION, "token " + this.accessToken);
-
-        ResponseEntity<String> responseEntity = this.restTemplate.exchange(this.api + filePath, HttpMethod.PUT,
-                new HttpEntity<String>(payload.toString(), httpHeaders), String.class);
-
-        if (responseEntity.getStatusCode().isError()) {
-            LOGGER.error("上传失败");
-        }
-        JsonObject response = JsonParser.parseString(responseEntity.getBody()).getAsJsonObject();
-        LOGGER.info("上传完毕: {}", response.toString());
-        return "index";
-    }
 
     /**
      * 遍历文件夹里所有sql文件
@@ -103,7 +58,7 @@ public class GithubUploader {
      */
     public void preUploadFile(String dataPath) throws IOException {
 //      "D:\\project\\daychange\\40\\temp\\2020\\12\\4\\";
-        String basePath = sql_backup_path + dataPath;
+        String basePath = sqlBackupPath + dataPath;
         LOGGER.info("文件 {}", basePath);
         File[] list = new File(basePath).listFiles();
         if (list == null || list.length == 0) {
@@ -118,8 +73,6 @@ public class GithubUploader {
     }
 
     /**
-     * 上传文件
-     *
      * @param file
      * @throws IOException
      */
@@ -127,12 +80,34 @@ public class GithubUploader {
     public void upload(File file) throws IOException {
 
         byte[] bytes = file2byte(file);
-
         String fileName = file.getName();
         String suffix = this.getSuffix(fileName).toLowerCase();
         if (!ALLOW_FILE_SUFFIX.contains(suffix)) {
             throw new IllegalArgumentException("不支持的文件后缀：" + suffix);
         }
+        exec(bytes, fileName);
+    }
+
+    /**
+     * @param multipartFile
+     * @throws IOException
+     */
+    public void upload(MultipartFile multipartFile) throws IOException {
+        String fileName = multipartFile.getOriginalFilename();
+        String suffix = this.getSuffix(fileName).toLowerCase();
+        if (!ALLOW_FILE_SUFFIX.contains(suffix)) {
+            throw new IllegalArgumentException("不支持的文件后缀：" + suffix);
+        }
+        exec(multipartFile.getBytes(), fileName);
+    }
+
+    /**
+     * 上传
+     * @param bytes    文件二进制
+     * @param fileName 文件名
+     */
+    public void exec(byte[] bytes, String fileName) {
+
         String[] folders = this.getDateFolder();
         // 最终的文件路径
         String filePath = new StringBuilder(
@@ -155,7 +130,7 @@ public class GithubUploader {
             LOGGER.error("上传失败");
         }
         JsonObject response = JsonParser.parseString(responseEntity.getBody()).getAsJsonObject();
-        LOGGER.info("上传完毕: {}", response.toString());
+        LOGGER.info("上传完毕");
     }
 
 
