@@ -51,6 +51,7 @@ public class GithubUploader {
 
 
     /**
+     * 使用accessToken进行上传，token有时间限制，不建议使用该方法
      * 遍历文件夹里所有sql文件
      *
      * @param dataPath

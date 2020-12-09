@@ -12,6 +12,18 @@ github:
 server:
   port: 9090
 
-#服务器上备份的路径
+#服务器上备份的根路径: D:/backupDB/年/月/日/aaa.sql
 sqlbackup:
   path: D:/backupDB/
+
+jGit:
+  local_repo_path: D:/workspace/project
+  local_repogit_config: D:/workspace/project/.git
+#  remote_repo_uri: git@github.com:Marthew01/atguigu.git
+  #使用https协议
+  remote_repo_uri: https://github.com/Marthew01/atguigu.git
+  init_local_code_dir: D:/workspace
+  local_code_ct_sql_dir: backupDB/
+  branch_name: v2.0
+  git_username: Marthew01
+  git_password: 13734171265rong.

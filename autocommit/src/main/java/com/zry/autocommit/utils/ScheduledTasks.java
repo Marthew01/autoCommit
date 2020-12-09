@@ -1,5 +1,6 @@
 package com.zry.autocommit.utils;
 
+import com.zry.autocommit.service.GitAutoCommit;
 import com.zry.autocommit.service.GithubUploader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -26,6 +28,9 @@ public class ScheduledTasks {
 
     @Autowired
     private GithubUploader githubUploader;
+    @Autowired
+    private GitAutoCommit jGitAutoCommit;
+
 
     /**
      * 表示每个星期日早5点
@@ -40,9 +45,12 @@ public class ScheduledTasks {
         String dataPath = LocalDate.now().format(formatter);
         log.info("The time is now {}", dataPath);
         try {
-            githubUploader.preUploadFile(dataPath);
-        } catch (IOException e) {
-            log.info("IO异常：{}",e.getMessage());
+//            githubUploader.preUploadFile(dataPath);
+
+            jGitAutoCommit.commitGit(dataPath);
+
+        } catch (Exception e) {
+            log.info("异常：{}",e.getMessage());
         }
     }
 }

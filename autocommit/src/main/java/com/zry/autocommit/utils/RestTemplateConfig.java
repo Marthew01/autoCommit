@@ -48,4 +48,8 @@ public class RestTemplateConfig {
         factory.setConnectTimeout(15000);//ms
         return factory;
     }
+
+
+
+
 }

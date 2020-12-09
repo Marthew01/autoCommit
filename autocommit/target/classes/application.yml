@@ -15,3 +15,15 @@ server:
 #服务器上备份的路径
 sqlbackup:
   path: D:/backupDB/
+
+jGit:
+  local_repo_path: D:/workspace/project
+  local_repogit_config: D:/workspace/project/.git
+#  remote_repo_uri: git@github.com:Marthew01/atguigu.git
+  #使用https协议
+  remote_repo_uri: https://github.com/Marthew01/atguigu.git
+  init_local_code_dir: D:/workspace
+  local_code_ct_sql_dir: backupDB/
+  branch_name: v2.0
+  git_username: Marthew01
+  git_password: 13734171265rong.
