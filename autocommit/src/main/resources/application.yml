@@ -1,29 +1,31 @@
+#########使用access-token###########
 github:
   bucket:
     # 配置仓库所属的用户名（如果是自己创建的，就是自己的用户名）
     user: "Marthew01"
     # 配置仓库名称
     repository: "twitter-bucket"
-    # 配置自己的acccessToken
+    # 配置自己的accessToken
     access-token: "5dbd3e82d2c9387e394e90c31562b294934a7226"
     url: "https://cdn.jsdelivr.net/gh/${github.bucket.user}/${github.bucket.repository}/"
     api: "https://api.github.com/repos/${github.bucket.user}/${github.bucket.repository}/contents/"
-
+#########使用access-token###########
 server:
   port: 9090
 
 #服务器上备份的根路径: D:/backupDB/年/月/日/aaa.sql
 sqlbackup:
   path: D:/backupDB/
-
+#########使用https###########
 jGit:
   local_repo_path: D:/workspace/project
   local_repogit_config: D:/workspace/project/.git
 #  remote_repo_uri: git@github.com:Marthew01/atguigu.git
   #使用https协议
-  remote_repo_uri: https://github.com/Marthew01/atguigu.git
+  remote_repo_uri: https://github.com/Marthew01/twitter-bucket.git
   init_local_code_dir: D:/workspace
   local_code_ct_sql_dir: backupDB/
-  branch_name: v2.0
+  branch_name: v1.0
   git_username: Marthew01
   git_password: 13734171265rong.
+  #########使用https###########
